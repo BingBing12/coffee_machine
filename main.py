@@ -55,6 +55,17 @@ def change(cost):
         return True
 
 
+def enough_resources(drink_resources):
+    enough = True
+    for item, val in drink_resources.items():
+        if resources[item] < val:
+            print(f"Sorry, machine does not have enough {item}")
+            enough = False
+        else:
+            res[item] = resources[item] - val
+    return enough
+
+
 off = False
 while not off:
     for drink in drinks:
@@ -69,25 +80,16 @@ while not off:
         for resource, value in resources.items():
             print(f"{resource}: {value}")
     elif choice == "espresso" or choice == "latte" or choice == "cappuccino":
-        drink_resources = MENU[choice]["ingredients"].items()
-
-        for ingredient, value in drink_resources:
-            difference = resources[ingredient] - value
-            if difference < 0:
-                print(f"Sorry, machine does not have enough {ingredient}")
-                make_drink = False
-            else:
-                res[ingredient] = difference
+        make_drink = enough_resources(MENU[choice]["ingredients"])
 
         if make_drink:
             paid = change(MENU[choice]["cost"])
-        if paid:
-            profit += MENU[choice]["cost"]
-
         if paid and make_drink:
-            resources["water"] = res["water"]
-            resources["milk"] = res["milk"]
-            resources["coffee"] = res["coffee"]
+            profit += MENU[choice]["cost"]
+            resources = res
+            # resources["water"] = res["water"]
+            # resources["milk"] = res["milk"]
+            # resources["coffee"] = res["coffee"]
             resources["money"] = profit
             print(f"Here is your {choice}, enjoy!")
 
